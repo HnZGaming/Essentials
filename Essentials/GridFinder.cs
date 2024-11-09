@@ -1,9 +1,7 @@
 ﻿using Sandbox.Game.Entities;
-using Sandbox.Game.Entities.Character;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using VRage.Game.ModAPI;
 using VRage.Groups;
 using VRageMath;
@@ -15,8 +13,7 @@ namespace Essentials
         public static ConcurrentBag<MyGroups<MyCubeGrid, MyGridMechanicalGroupData>.Group> FindGridGroupMechanical(string gridName) 
         {
             var groups = new ConcurrentBag<MyGroups<MyCubeGrid, MyGridMechanicalGroupData>.Group>();
-
-            Parallel.ForEach(MyCubeGridGroups.Static.Mechanical.Groups, group => 
+            foreach (var group in MyCubeGridGroups.Static.Mechanical.Groups)
             {
                 foreach (MyGroups<MyCubeGrid, MyGridMechanicalGroupData>.Node groupNodes in group.Nodes) 
                 {
@@ -31,7 +28,7 @@ namespace Essentials
 
                     groups.Add(group);
                 }
-            });
+            }
 
             return groups;
         }
