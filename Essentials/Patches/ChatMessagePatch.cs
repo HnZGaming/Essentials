@@ -10,6 +10,7 @@ using Torch.Utils;
 using Sandbox.Game.Gui;
 using System;
 using Sandbox.Game.World;
+using VRage.GameServices;
 
 namespace Essentials.Patches {
     [PatchShim]
@@ -53,7 +54,9 @@ namespace Essentials.Patches {
                     var Rank = RanksAndPermissions.GetRankData(Account.Rank);
                     if (Rank.DisplayPrefix) {
                         msg.Author = 0;
-                        msg.CustomAuthorName = $"{Rank.Prefix}{Account.Player}";
+                        var customData = msg.CustomData ?? new ChatMessageCustomData();
+                        customData.AuthorName = $"{Rank.Prefix}{Account.Player}";
+                        msg.CustomData = customData;
                     }
                 }
                 return true;
