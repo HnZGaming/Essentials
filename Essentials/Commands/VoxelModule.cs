@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using NLog;
 using Sandbox;
 using Sandbox.Engine.Multiplayer;
@@ -21,7 +20,6 @@ using VRage.Game.ModAPI;
 using VRage.Network;
 using VRage.Voxels;
 using VRageMath;
-using Parallel = ParallelTasks.Parallel;
 
 namespace Essentials.Commands
 {

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Essentials.Conditions;
 using Sandbox.Game.Entities;
 using Torch.Commands;
@@ -111,7 +110,7 @@ namespace Essentials.Commands
 
 
             var resultList = new List<MyCubeGrid>();
-            Parallel.ForEach(MyCubeGridGroups.Static.Logical.Groups, (group) =>
+            foreach (var group in MyCubeGridGroups.Static.Logical.Groups)
             {
                 //if (group.Nodes.All(grid => conditions.TrueForAll(func => func(grid.NodeData))))
                 bool res = true;
@@ -125,7 +124,8 @@ namespace Essentials.Commands
                         bool? r = c.Invoke(node.NodeData);
                         if (r == null)
                         {
-                            return;
+                            res = false;
+                            break;
                         }
 
                         if (r == true)
@@ -154,7 +154,7 @@ namespace Essentials.Commands
                     }
                 }
                     
-            });
+            }
 
             return resultList;
         }

@@ -7,11 +7,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Essentials.Utils;
 using NLog;
-using ParallelTasks;
 using Sandbox;
 using Sandbox.Engine.Multiplayer;
 using Sandbox.Engine.Physics;
@@ -43,7 +41,6 @@ using VRage.ObjectBuilders;
 using VRage.Replication;
 using VRage.Serialization;
 using VRageMath;
-using Parallel = ParallelTasks.Parallel;
 
 namespace Essentials.Patches
 {
