@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Essentials.Conditions;
+using NLog;
 using Sandbox.Game.Entities;
+using Sandbox.Game.World;
 using Torch.Commands;
 
 namespace Essentials.Commands
@@ -11,11 +13,12 @@ namespace Essentials.Commands
     public static class ConditionsChecker
     {
         private static List<Condition> _conditionLookup;
+        public static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
         public static void Init()
         {
             _conditionLookup = new List<Condition>();
-                
+
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany((x) =>
                 {
@@ -49,7 +52,7 @@ namespace Essentials.Commands
         {
             return _conditionLookup;
         }
-        
+
         public static IEnumerable<MyCubeGrid> ScanConditions(CommandContext context, IReadOnlyList<string> args)
         {
             var conditions = new List<Func<MyCubeGrid, bool?>>();
@@ -97,6 +100,7 @@ namespace Essentials.Commands
                         break;
                     }
                 }
+
                 if (!found)
                 {
                     context.Respond($"Unknown argument '{arg}'");
@@ -108,7 +112,8 @@ namespace Essentials.Commands
             if (!args.Contains("haspilot", StringComparer.CurrentCultureIgnoreCase))
                 conditions.Add(g => !ConditionsImplementations.Piloted(g));
 
-
+            var economyGrids = GetEconomyStationGridIdSet();
+            Log.Info($"economy grids: {string.Join(", ", economyGrids)}");
             var resultList = new List<MyCubeGrid>();
             foreach (var group in MyCubeGridGroups.Static.Logical.Groups)
             {
@@ -145,19 +150,36 @@ namespace Essentials.Commands
 
                 if (res)
                 {
-                    lock (resultList)
+                    foreach (var grid in group.Nodes.Select(n => n.NodeData))
                     {
-                        foreach (var grid in group.Nodes.Where(x => x.NodeData.Projector == null))
+                        if (grid.Projector != null) continue;
+                        if (economyGrids.Contains(grid.EntityId))
                         {
-                            resultList.Add(grid.NodeData);
+                            Log.Info($"skipped economy grid: {grid.DisplayName}");
+                            continue;
                         }
+
+                        resultList.Add(grid);
                     }
                 }
-                    
             }
 
             return resultList;
         }
-        
+
+        static HashSet<long> GetEconomyStationGridIdSet()
+        {
+            var set = new HashSet<long>();
+            foreach (var (_, faction) in MySession.Static.Factions)
+            foreach (var station in faction.Stations)
+            {
+                var gridId = station.StationEntityId;
+                if (gridId == 0) continue;
+
+                set.Add(gridId);
+            }
+
+            return set;
+        }
     }
 }
